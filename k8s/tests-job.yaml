@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-tests
+  namespace: users-api
+  labels:
+    app: api-tests
+spec:
+  # Job не будет автоматически удаляться после завершения
+  # Удалите вручную: kubectl delete job api-tests -n users-api
+  ttlSecondsAfterFinished: 3600  # Удалить через 1 час после завершения
+  backoffLimit: 0  # Не перезапускать при падении
+  template:
+    metadata:
+      labels:
+        app: api-tests
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: tests
+        # ВАЖНО: Замените на ваш registry/image после сборки
+        # Например: your-registry.com/users-api-tests:v1.0.0
+        image: users-api-tests:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: API_BASE_URL
+          value: "http://backend:8000"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        # Можно переопределить команду для запуска конкретных тестов:
+        # command: ["pytest", "-v", "-k", "test_create_user"]
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      # Ждём пока backend будет готов
+      initContainers:
+      - name: wait-for-backend
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          until wget -q --spider http://backend:8000/; do
+            echo "Waiting for backend API..."
+            sleep 3
+          done
+          echo "Backend is ready! Starting tests..."

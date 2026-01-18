@@ -1,0 +1,83 @@
+# Определяем сервисы (контейнеры) нашего приложения
+services:
+  # PostgreSQL база данных
+  postgres:
+    image: postgres:15-alpine
+    container_name: users_db
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+    ports:
+      # Пробрасываем порт БД на хост для возможности подключения извне
+      - "5432:5432"
+    volumes:
+      # Персистентное хранилище данных БД
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # Проверка готовности БД к приёму соединений
+      test: ["CMD-SHELL", "pg_isready -U testuser -d testdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+    # Resource limits - ограничения ресурсов
+    mem_limit: 512m
+    cpus: 0.5
+
+  # Backend API (FastAPI)
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: users_api
+    environment:
+      DATABASE_URL: postgresql://testuser:testpass@postgres:5432/testdb
+    ports:
+      # API будет доступно на http://localhost:8000
+      - "8000:8000"
+    depends_on:
+      postgres:
+        # Ждём пока БД пройдёт health check перед запуском backend
+        condition: service_healthy
+    networks:
+      - app_network
+    # Автоматический перезапуск при падении
+    restart: unless-stopped
+    # Resource limits - ограничения ресурсов
+    mem_limit: 256m
+    cpus: 0.5
+
+  # Автотесты (pytest)
+  tests:
+    build:
+      context: .
+      dockerfile: docker/tests.Dockerfile
+    container_name: api_tests
+    environment:
+      # Тесты обращаются к API по имени сервиса 'backend'
+      API_BASE_URL: http://backend:8000
+    depends_on:
+      backend:
+        # Запускаем тесты только после старта backend
+        condition: service_started
+    networks:
+      - app_network
+    # Resource limits - ограничения ресурсов
+    mem_limit: 256m
+    cpus: 0.5
+    # Переопределяем команду для запуска конкретных тестов (опционально)
+    # command: pytest -v test_users_crud.py
+    # Можно добавить volumes для live-reload тестов во время разработки:
+    # volumes:
+    #   - ./tests:/tests
+
+# Именованный volume для хранения данных PostgreSQL
+volumes:
+  postgres_data:
+
+# Изолированная сеть для всех сервисов
+networks:
+  app_network:
+    driver: bridge

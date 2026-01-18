@@ -1,0 +1,64 @@
+# =============================================================================
+# .dockerignore - исключаем файлы из Docker build context
+# Ускоряет сборку и защищает от случайного включения секретов
+# =============================================================================
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv
+venv
+ENV
+.pytest_cache
+.coverage
+htmlcov
+*.egg-info
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Логи и временные файлы
+logs/
+*.log
+tmp/
+temp/
+
+# Документация (не нужна в образе)
+*.md
+!README.md
+docs/
+
+# Kubernetes манифесты (не нужны при сборке образа)
+k8s/
+
+# Скрипты автоматизации (не нужны в образе приложения)
+scripts/
+
+# Тесты (для backend образа тесты не нужны)
+tests/
+
+# Docker файлы (рекурсия не нужна)
+docker/
+Dockerfile*
+docker-compose*.yml
+
+# Секреты (НИКОГДА не должны попасть в образ)
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Разное
+.DS_Store
+Thumbs.db

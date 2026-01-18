@@ -1,0 +1,6 @@
+# Test dependencies
+pytest==7.4.4
+requests==2.31.0
+pytest-xdist==3.5.0        # Для параллельного запуска тестов
+pytest-timeout==2.2.0      # Таймауты для тестов
+pytest-html==4.1.1         # HTML отчёты

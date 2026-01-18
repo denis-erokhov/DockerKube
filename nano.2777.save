@@ -1,0 +1,100 @@
+  #!/bin/bash
+  # Скрипт статистики по логам
+  # Использует: awk, sed, jq, grep
+
+  LINES=${1:-100}
+
+  echo "========================================"
+  echo "  LOG STATISTICS REPORT"
+  echo "  $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "========================================"
+  echo ""
+
+  echo "📦 CONTAINERS:"
+  docker ps --format '{{json .}}' | jq -r '"   \(.Names): \(.Status)"'
+  echo ""
+
+  echo "📊 HTTP CODES (last $LINES requests):"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    awk '{codes[$9]++} END {for(c in codes) if(c~/^[0-9]/) printf "   %s: %d\n", c, codes[c]}' | sort
+  echo ""
+
+  echo "🔥 TOP-5 ERRORS:"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    grep -E "4[0-9]{2}|5[0-9]{2}" | \
+    awk '{print $7, $9}' | sort | uniq -c | sort -rn | head -5 | \
+    awk '{printf "   %s %s - %d times\n", $2, $3, $1}'
+  echo ""
+
+  echo "🌐 UNIQUE IPs:"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    awk -F'[ :]' '{print $4}' | sort -u | wc -l | \
+    awk '{printf "   %d unique IPs\n", $1}'
+  echo ""
+  echo "========================================"  #!/bin/bash
+  # Скрипт статистики по логам
+  # Использует: awk, sed, jq, grep
+
+  LINES=${1:-100}
+
+  echo "========================================"
+  echo "  LOG STATISTICS REPORT"
+  echo "  $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "========================================"
+  echo ""
+
+  echo "📦 CONTAINERS:"
+  docker ps --format '{{json .}}' | jq -r '"   \(.Names): \(.Status)"'
+  echo ""
+
+  echo "📊 HTTP CODES (last $LINES requests):"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    awk '{codes[$9]++} END {for(c in codes) if(c~/^[0-9]/) printf "   %s: %d\n", c, codes[c]}' | sort
+  echo ""
+
+  echo "🔥 TOP-5 ERRORS:"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    grep -E "4[0-9]{2}|5[0-9]{2}" | \
+    awk '{print $7, $9}' | sort | uniq -c | sort -rn | head -5 | \
+    awk '{printf "   %s %s - %d times\n", $2, $3, $1}'
+  echo ""
+
+  echo "🌐 UNIQUE IPs:"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    awk -F'[ :]' '{print $4}' | sort -u | wc -l | \
+    awk '{printf "   %d unique IPs\n", $1}'
+  echo ""
+  echo "========================================"  #!/bin/bash
+  # Скрипт статистики по логам
+  # Использует: awk, sed, jq, grep
+
+  LINES=${1:-100}
+
+  echo "========================================"
+  echo "  LOG STATISTICS REPORT"
+  echo "  $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "========================================"
+  echo ""
+
+  echo "📦 CONTAINERS:"
+  docker ps --format '{{json .}}' | jq -r '"   \(.Names): \(.Status)"'
+  echo ""
+
+  echo "📊 HTTP CODES (last $LINES requests):"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    awk '{codes[$9]++} END {for(c in codes) if(c~/^[0-9]/) printf "   %s: %d\n", c, codes[c]}' | sort
+  echo ""
+
+  echo "🔥 TOP-5 ERRORS:"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    grep -E "4[0-9]{2}|5[0-9]{2}" | \
+    awk '{print $7, $9}' | sort | uniq -c | sort -rn | head -5 | \
+    awk '{printf "   %s %s - %d times\n", $2, $3, $1}'
+  echo ""
+
+  echo "🌐 UNIQUE IPs:"
+  docker-compose logs --tail=$LINES backend 2>/dev/null | \
+    awk -F'[ :]' '{print $4}' | sort -u | wc -l | \
+    awk '{printf "   %d unique IPs\n", $1}'
+  echo ""
+  echo "========================================"
