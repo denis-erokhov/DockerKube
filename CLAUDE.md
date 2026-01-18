@@ -11,7 +11,16 @@ Educational project demonstrating REST API test automation using Python, Docker,
 3. **Infrastructure** - Docker Compose for local development and Kubernetes manifests for deployment
 
 **Learning Context:** This project is used for SDET/DevOps learning (see `LEARNING.md` and `LEARNING_PROGRESS.md`)
-**Current Phase:** Week 2, Day 5 - Docker logs analysis and automation completed
+**Current Phase:** Week 7 - CI/CD with GitHub Actions
+
+## Teaching Rules
+
+При выполнении задач дополнительно обучай пользователя:
+
+1. **Git** — показывай продвинутые команды (diff, log, rebase, stash, cherry-pick и др.), объясняй что они делают
+2. **Linux/Bash** — объясняй флаги команд, показывай альтернативы
+3. **Docker** — объясняй что происходит "под капотом"
+4. **Best practices** — почему делаем именно так, какие есть альтернативы
 
 ## Quick Start
 
