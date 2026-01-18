@@ -29,7 +29,7 @@ jobs:
       # Шаг 2: Запустить Docker Compose
       - name: Start services
         run: |
-          docker-compose up -d postgres backend
+          docker compose up -d postgres backend
           sleep 15  # Ждём пока сервисы запустятся
 
       # Шаг 3: Проверить что API работает
@@ -40,20 +40,20 @@ jobs:
       # Шаг 4: Запустить тесты
       - name: Run tests
         run: |
-          docker-compose up --exit-code-from tests tests
+          docker compose up --exit-code-from tests tests
 
       # Шаг 5: Показать логи при ошибке
       - name: Show logs on failure
         if: failure()
         run: |
-          docker-compose logs backend
-          docker-compose logs postgres
+          docker compose logs backend
+          docker compose logs postgres
 
       # Шаг 6: Остановить сервисы
       - name: Cleanup
         if: always()
         run: |
-          docker-compose down -v
+          docker compose down -v
 
   # ─────────────────────────────────────────────────────────────────────────
   # Job 2: Сборка Docker образов

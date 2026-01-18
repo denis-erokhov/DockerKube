@@ -6,7 +6,8 @@
       "Bash(ls:*)",
       "Bash(docker-compose ps:*)",
       "Bash(wsl -e bash -c \"jq --version 2>/dev/null || echo ''jq не установлен''\")",
-      "Bash(wsl -e bash -c:*)"
+      "Bash(wsl -e bash -c:*)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }
