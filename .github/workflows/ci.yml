@@ -26,30 +26,49 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Шаг 2: Запустить Docker Compose
+      # Шаг 2: Проверить что Docker доступен
+      - name: Check Docker version
+        run: |
+          docker --version
+          docker compose version
+
+      # Шаг 3: Собрать и запустить сервисы
       - name: Start services
         run: |
-          docker compose up -d postgres backend
-          sleep 15  # Ждём пока сервисы запустятся
+          docker compose up -d --build postgres backend
+          echo "Waiting for services to start..."
+          sleep 20
 
-      # Шаг 3: Проверить что API работает
+      # Шаг 4: Проверить статус контейнеров
+      - name: Check containers
+        run: |
+          docker compose ps
+          docker compose logs postgres --tail=20
+          docker compose logs backend --tail=20
+
+      # Шаг 5: Проверить что API работает
       - name: Health check
         run: |
+          for i in 1 2 3 4 5; do
+            curl -s http://localhost:8000/ && break
+            echo "Attempt $i failed, retrying..."
+            sleep 5
+          done
           curl --fail http://localhost:8000/ || exit 1
 
-      # Шаг 4: Запустить тесты
+      # Шаг 6: Запустить тесты
       - name: Run tests
         run: |
           docker compose up --exit-code-from tests tests
 
-      # Шаг 5: Показать логи при ошибке
+      # Шаг 7: Показать логи при ошибке
       - name: Show logs on failure
         if: failure()
         run: |
           docker compose logs backend
           docker compose logs postgres
 
-      # Шаг 6: Остановить сервисы
+      # Шаг 8: Остановить сервисы
       - name: Cleanup
         if: always()
         run: |
