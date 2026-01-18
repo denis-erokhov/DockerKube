@@ -161,7 +161,8 @@ def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(ge
         )
 
     # Проверяем что хотя бы одно поле передано для обновления
-    if not any(user.model_dump(exclude_unset=True).values()):
+    # Используем len() вместо any() т.к. any([False]) = False
+    if not user.model_dump(exclude_unset=True):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="At least one field must be provided for update"
